@@ -5,6 +5,18 @@ peach cards, terracotta accents, circular music visualization, and Bongo Cat.
 Built for your M4 Mac with SwiftUI + AppKit. Requires **macOS 14+ and Xcode 16+**.
 No Homebrew, API keys, Swift packages, or paid developer account needed to run locally.
 
+## Product preview
+
+<p align="center">
+  <a href="demo/demo.mp4">
+    <img src="demo/preview.png" alt="Caelestia Notch product preview — click to watch the demo" width="100%">
+  </a>
+</p>
+
+<p align="center">
+  <sub>▶ <a href="demo/demo.mp4">Watch the 24-second demo</a> — hover to expand, switch tabs, play music, drop files.</sub>
+</p>
+
 ## Open and run in Xcode
 
 1. Quit **Boring Notch** first so the two notch windows do not overlap.
