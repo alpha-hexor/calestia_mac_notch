@@ -8,10 +8,10 @@ No Homebrew, API keys, Swift packages, or paid developer account needed to run l
 ## Product preview
 
 <p align="center">
-  <video width="400" controls>
+  <video width="600" autoplay muted loop playsinline>
     <source src="https://github.com/user-attachments/assets/0ed250b9-d950-44af-82be-315e3248f13b" type="video/mp4">
-    Your browser does not support the video tag.
   </video>
+  <br/>
   <sub>24-second demo — hover to expand, switch tabs, play music, drop files.</sub>
 </p>
 
