@@ -7,11 +7,9 @@ No Homebrew, API keys, Swift packages, or paid developer account needed to run l
 
 ## Product preview
 
-<p align="center">
-  https://github.com/user-attachments/assets/0ed250b9-d950-44af-82be-315e3248f13b
-  <br/>
-  <sub>24-second demo — hover to expand, switch tabs, play music, drop files.</sub>
-</p>
+<p align="center">  <sub>24-second demo — hover to expand, switch tabs, play music, drop files.</sub></p>
+
+https://github.com/user-attachments/assets/0ed250b9-d950-44af-82be-315e3248f13b
 
 ## Open and run in Xcode
 
