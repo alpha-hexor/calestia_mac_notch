@@ -62,3 +62,19 @@ one tap per kick through the real 2,048-sample FFT, within 150 ms of the onset.
 Other tests cover sustained notes/silence, cooldown under rapid triggers, treble
 rejection, and pose preservation across playback/capture stops and restarts.
 These tests verify detection/gating, not the subjective appearance on real music.
+
+## Single-line lyrics — 2026-09-26
+
+- Debug and Release builds succeeded; app identity/signature checks passed.
+- Full Core suite passed: 23 tests (11 existing audio/rhythm tests plus 12 lyrics
+  tests). The 12 lyrics tests passed again after fixing literal-plus query encoding.
+- Coverage includes fractional/multiple timestamps, Unicode, blank gaps, offsets,
+  boundary selection and backward seeking, paused/stale playback clocks, exact and
+  fallback matching, mismatched recordings, instrumentals, plain-only results,
+  cache isolation, request encoding, and retryable HTTP errors.
+- A live request through the actual LRCLIB client returned 34 timestamped lines
+  for the reference recording. The diagnostic printed counts/timing only; lyric
+  content was not saved as a fixture. The temporary diagnostic source was removed.
+- The user independently ran the app from Xcode and confirmed it is working.
+  The Release bundle was also rebuilt. Detailed edge-case checks remain listed
+  in `manual-qa.md`, rather than being inferred from that confirmation.

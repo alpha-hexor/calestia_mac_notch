@@ -18,6 +18,7 @@ final class AppModel: ObservableObject {
     let spotify = SpotifyService()
     let audio = AudioCaptureService()
     let bongo = BongoCatController()
+    let lyrics = LyricsService()
     let system = SystemMonitor()
     @Published var expanded = false
     @Published var notchWidth: CGFloat = 190
@@ -30,6 +31,7 @@ final class AppModel: ObservableObject {
     init() {
         selectedTab = NotchTab(rawValue: UserDefaults.standard.string(forKey: "selectedTab") ?? "") ?? .media
         bongo.connect(audio: audio, spotify: spotify)
+        lyrics.connect(spotify: spotify)
     }
 
     func start() {

@@ -83,12 +83,29 @@ being off keep the cat still. Detection follows low-frequency pulses in system
 audio, not an exact BPM grid; other apps' sounds can also trigger it while Spotify
 is playing. Reduce Motion disables the extra compression/settle effect.
 
+### Single-line lyrics
+
+The Media tab shows **one synchronized lyric line below the song information and
+above the playback controls**. It follows Spotify's position, holds while paused,
+and updates when you seek. Long lines shrink slightly, then truncate to stay on
+one line; hover the text to read the complete line.
+
+Lyrics come from **[LRCLIB](https://lrclib.net)**, using the current track's title,
+artist, album, and duration. Those details are sent to LRCLIB over HTTPS; no Spotify
+credentials or audio are sent. This uses the same general lookup/timing approach
+as Boring Notch's development branch. Audio capture can stay off for lyrics.
+
+Songs without matching timestamped lyrics show **Synced lyrics unavailable**.
+Instrumentals are labeled; intros and timestamped gaps show a music note. A failed
+network lookup has an inline **Retry** action. Results are cached in memory for
+up to 100 track/version combinations. Coverage and timing depend on LRCLIB's data.
+
 ## What's included
 
 | Tab | Features |
 | --- | --- |
 | Dashboard | Clock, current-month calendar, battery/charging, hardware model, uptime, mini Spotify player |
-| Media | Circular album art, live radial frequency bars, title/artist/album, previous/play/pause/next, seeking, animated Bongo Cat |
+| Media | Circular album art, live radial frequency bars, title/artist/album, synchronized lyric line, previous/play/pause/next, seeking, beat-reactive Bongo Cat |
 | Performance | CPU utilization, memory-used estimate, used/available disk space |
 
 The selected tab is remembered. The panel follows display configuration changes
@@ -137,7 +154,7 @@ This project is not configured for App Store distribution or notarization.
 
 ## Verification
 
-Audio analysis tests:
+Audio and lyrics tests:
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
@@ -145,7 +162,8 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 
 Tests exercise silence, tones in different frequency bands, sample chunk boundaries,
 stereo downmix, decay/reset, invalid sample rates, beat cooldown, pause/capture gating,
-and synthetic kick drums passed through the actual FFT. See [manual QA](docs/manual-qa.md)
+synthetic kick drums passed through the actual FFT, lyric timestamps, playback-clock
+interpolation, LRCLIB matching, HTTP errors, query encoding, and caching. See [manual QA](docs/manual-qa.md)
 for the checks that require macOS UI permissions and your Spotify session.
 
 After building both Debug and Release, verify their signatures and separate privacy
@@ -157,8 +175,8 @@ identities with `python3 scripts/check-app-identities.py`.
 CaelestiaNotch/
   App/          App lifecycle, shared state, menu-bar controls
   Window/       Notch positioning, hover detection, collapse delay
-  Services/     Spotify, ScreenCaptureKit audio, cat motion, system metrics
-  Core/         Independent FFT, beat detection, playback gating
+  Services/     Spotify, lyrics, ScreenCaptureKit audio, cat motion, system metrics
+  Core/         FFT, beat detection, lyric parsing/lookup, playback clock
   UI/           Theme, three tabs, circular visualizer, GIF renderer
   Resources/    Bongo Cat GIF and upstream attribution/license
 Config/         Info.plist, Apple Events entitlement
@@ -170,6 +188,7 @@ Tests/          Audio-analysis tests
 - **Tab layouts:** `UI/DashboardView.swift`, `MediaView.swift`, `PerformanceView.swift`.
 - **Visualizer response:** `Core/SpectrumAnalyzer.swift`.
 - **Cat sensitivity/cooldown:** `Core/BeatDetector.swift`; settling effect in `UI/BongoCatView.swift`.
+- **Lyrics:** `UI/LyricLineView.swift`, `Services/LyricsService.swift`, and `Core/LRCLIBClient.swift`.
 
 Bongo Cat is the character in the linked Caelestia GIF (rather than Kirby).
 The bundled GIF is unmodified; upstream source and GPL license are included in

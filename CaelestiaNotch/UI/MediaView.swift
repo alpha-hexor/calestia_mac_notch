@@ -4,14 +4,16 @@ struct MediaView: View {
     @ObservedObject var spotify: SpotifyService
     @ObservedObject var audio: AudioCaptureService
     let bongo: BongoCatController
+    let lyrics: LyricsService
 
     var body: some View {
         VStack(spacing: 8) {
             HStack(spacing: 18) {
                 RadialVisualizer(image: spotify.artwork, bands: audio.bands, isPlaying: spotify.isPlaying)
                     .frame(width: 210, height: 210)
-                VStack(spacing: 10) {
+                VStack(spacing: 8) {
                     metadata
+                    LyricLineView(spotify: spotify, lyrics: lyrics)
                     PlaybackControls(spotify: spotify)
                     if let track = spotify.track {
                         SeekBar(position: spotify.position, duration: track.duration, onSeek: spotify.seek)

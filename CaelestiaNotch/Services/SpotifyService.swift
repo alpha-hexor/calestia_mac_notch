@@ -48,10 +48,12 @@ final class SpotifyService: ObservableObject {
     @Published private(set) var isPlaying = false
     @Published private(set) var isRunning = false
     @Published private(set) var position: Double = 0
+    @Published private(set) var playbackClock = PlaybackClock()
     @Published private(set) var permissionDenied = false
     @Published private(set) var errorMessage: String?
     private var timer: Timer?
     private var refreshing = false
+    private var playbackRevision: UInt = 0
     private var artworkTask: Task<Void, Never>?
     private let runner = SpotifyScriptRunner()
 
@@ -82,7 +84,9 @@ final class SpotifyService: ObservableObject {
     func seek(to seconds: Double) {
         guard seconds.isFinite, let track else { return }
         let target = min(max(seconds, 0), track.duration)
+        playbackRevision &+= 1
         position = target
+        recordPlayback()
         command("set player position to \(target)")
     }
 
@@ -106,10 +110,12 @@ final class SpotifyService: ObservableObject {
             position = 0
             errorMessage = nil
             artworkTask?.cancel()
+            recordPlayback()
             return
         }
         guard !permissionDenied else { return }
         refreshing = true
+        let revision = playbackRevision
         defer { refreshing = false }
         do {
             let result = try await runner.run("""
@@ -118,6 +124,7 @@ final class SpotifyService: ObservableObject {
                 set t to current track
                 return {"track", playbackState, id of t, name of t, artist of t, album of t, duration of t, artwork url of t, player position}
                 """)
+            guard revision == playbackRevision else { return }
             errorMessage = nil
             isPlaying = result.atIndex(2)?.stringValue == "playing"
             guard result.atIndex(1)?.stringValue == "track", result.numberOfItems >= 9 else {
@@ -125,6 +132,7 @@ final class SpotifyService: ObservableObject {
                 artwork = nil
                 position = 0
                 artworkTask?.cancel()
+                recordPlayback()
                 return
             }
             // Spotify returns duration in milliseconds despite the wording in its dictionary.
@@ -138,6 +146,7 @@ final class SpotifyService: ObservableObject {
             if newTrack.artworkURL != track?.artworkURL { loadArtwork(newTrack.artworkURL) }
             track = newTrack
             position = min(newTrack.duration, max(0, result.atIndex(9)?.doubleValue ?? 0))
+            recordPlayback()
         } catch { handle(error) }
     }
 
@@ -149,6 +158,13 @@ final class SpotifyService: ObservableObject {
         } else {
             errorMessage = "Spotify is not responding. Open Spotify and try again."
         }
+        recordPlayback()
+    }
+
+    private func recordPlayback() {
+        playbackClock = PlaybackClock(trackID: track?.id, position: position, duration: track?.duration ?? 0,
+                                      isPlaying: isPlaying && errorMessage == nil,
+                                      sampledAt: ProcessInfo.processInfo.systemUptime)
     }
 
     private func loadArtwork(_ address: String) {

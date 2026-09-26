@@ -1,7 +1,7 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
-// The app builds with the Xcode project. This package tests the audio math independently.
+// The app builds with Xcode. This package tests independent audio and lyrics logic.
 let package = Package(
     name: "CaelestiaCore",
     platforms: [.macOS(.v14)],

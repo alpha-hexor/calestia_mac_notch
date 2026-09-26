@@ -50,3 +50,19 @@ These are a checklist, not a claim that the interactive checks have passed.
 - Battery status works on a laptop; desktop displays AC power.
 - Inspect Activity Monitor with panel closed/open and capture off/on for sustained
   unexpected CPU growth or memory accumulation.
+
+## Single-line lyrics
+- Play a track with LRCLIB synced lyrics: exactly one line appears below the song
+  information and above controls in Media; no changes to Dashboard or Performance.
+- Pause/resume in Spotify and in the notch: the line holds and resumes correctly.
+- Seek backward/forward, including while paused: the correct line appears without
+  an old in-flight poll snapping it back.
+- Switch tracks rapidly during a lookup: old lyrics do not overwrite the new track.
+- Long and non-Latin lines remain one line without pushing the player controls or
+  cat out of position. Hover exposes the full text.
+- Intros/timestamped gaps show a music note; instrumentals and missing synced
+  lyrics use their respective labels instead of guessing timing for plain text.
+- Disconnect the network for an uncached track: inline Retry appears and works
+  after connectivity returns. A previously cached track still displays lyrics.
+- Lyrics work with audio capture disabled. Close/reopen the panel and switch tabs:
+  playback synchronization resumes from the current position.
