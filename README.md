@@ -9,7 +9,7 @@ No Homebrew, API keys, Swift packages, or paid developer account needed to run l
 
 1. Quit **Boring Notch** first so the two notch windows do not overlap.
 2. Open **`CaelestiaNotch.xcodeproj`** from this folder. Open the project, not
-   `Package.swift` (the package is only for audio-math tests).
+    `Package.swift` (the package is for Core tests, not the app).
 3. In Xcode's top toolbar, choose **CaelestiaNotch → My Mac**.
 4. Press **⌘R** or click the triangular Run button.
 5. Move your pointer to the top-center camera notch. The panel expands on hover
@@ -54,8 +54,8 @@ capture was rejected. To recover an old entry:
    remove the old Caelestia entry using **−**, then use **+** to add the exact app
    you want to run. Choose **Screen & System Audio Recording**, not audio-only;
    this ScreenCaptureKit implementation needs the screen-capture permission.
-3. For the standalone version, select
-   `build/Build/Products/Release/Caelestia Notch.app` in this project.
+3. Select the app you built in Xcode or copied into **Applications**. Use the
+   menu-bar **Show Running App in Finder** action to locate the exact running copy.
 4. Open that same app, play Spotify, and click **Enable visualizer** again.
 
 The menu's **Show Running App in Finder** reveals the exact copy. If capture fails,
@@ -132,29 +132,24 @@ can differ from the purgeable-inclusive number in System Settings. CPU/memory
 update every two seconds; disk/battery every thirty seconds. No temperatures,
 weather, GPU gauge, workspace tab, or automatic launch at login in this version.
 
-## Build from Terminal (optional)
+## Build a standalone app in Xcode
 
-Run these commands from this project folder. Using `DEVELOPER_DIR` fixes the
-Command Line Tools selection for these commands only:
+1. Open **`CaelestiaNotch.xcodeproj`** and select **CaelestiaNotch → My Mac**.
+2. With Xcode active, click **Product** in the macOS menu bar at the very top of
+   your screen, then choose **Scheme → Edit Scheme…**.
+3. Select **Run** on the left, open the **Info** tab, and set **Build Configuration**
+   to **Release**.
+4. Click **Close**, then press **⌘R** to build and launch the optimized app.
+   To build without launching, press **⌘B** instead.
+5. In Xcode's project navigator on the left, expand **Products**, right-click
+   **Caelestia Notch.app**, and select **Show in Finder**. If the app is running,
+   its menu-bar **Show Running App in Finder** action also reveals the built app.
+6. Quit the running app, copy **Caelestia Notch.app** into **Applications**, and
+   open that copy. You can now use it without Xcode.
 
-```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-  xcodebuild -project CaelestiaNotch.xcodeproj -scheme CaelestiaNotch \
-  -configuration Debug -derivedDataPath build build
-
-open "build/Build/Products/Debug/Caelestia Notch.app"
-```
-
-For a standalone optimized build:
-
-```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-  xcodebuild -project CaelestiaNotch.xcodeproj -scheme CaelestiaNotch \
-  -configuration Release -derivedDataPath build build
-```
-
-You can drag `build/Build/Products/Release/Caelestia Notch.app` into Applications.
-Run one copy at a time. Prefer a stable location for macOS permission grants.
+Xcode normally stores builds in **DerivedData**; use **Show in Finder** to locate
+the exact build. After future rebuilds, replace the copy in Applications to update
+it. Run one copy at a time and grant permissions to the copy you intend to use.
 
 ### Signing
 
@@ -165,28 +160,6 @@ target → Signing & Capabilities → **Signing Certificate: Sign to Run Locally
 For more stable identity across builds, you can instead enable automatic signing
 and select your own team. Local rebuilds may require permission approval again.
 This project is not configured for App Store distribution or notarization.
-
-## Verification
-
-Audio, lyrics, and file-reference tests:
-
-```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
-```
-
-Tests exercise silence, tones in different frequency bands, sample chunk boundaries,
-stereo downmix, decay/reset, invalid sample rates, beat cooldown, pause/capture gating,
-synthetic kick drums passed through the actual FFT, lyric timestamps, playback-clock
-interpolation, LRCLIB matching, HTTP errors, query encoding, and caching. See [manual QA](docs/manual-qa.md)
-for the checks that require macOS UI permissions and your Spotify session.
-
-After building both Debug and Release, verify their signatures and separate privacy
-identities with `python3 scripts/check-app-identities.py`.
-
-Run `python3 scripts/check-shelf-interactions.py` for native Shelf hit-testing,
-drop callbacks, outgoing file payloads, drag cleanup, and sharing-state checks.
-It uses a test sharing service; actual Telegram drops and AirDrop transfers remain
-interactive checks in `docs/manual-qa.md`.
 
 ## Where to customize
 
