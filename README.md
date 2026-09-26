@@ -100,6 +100,19 @@ Instrumentals are labeled; intros and timestamped gaps show a music note. A fail
 network lookup has an inline **Retry** action. Results are cached in memory for
 up to 100 track/version combinations. Coverage and timing depend on LRCLIB's data.
 
+### Temporary file Shelf
+
+Drag local files or folders from Finder onto the notch to open **Shelf**. Drop
+them into the **File tray** on the right, then drag a tile into Telegram, Finder,
+or another app that accepts files. The **+** button also lets you choose files.
+Drop files onto **AirDrop** on the left to open the native recipient chooser;
+clicking that area lets you choose files first.
+
+The tray holds references for this session only. It clears on quit; **Remove** and
+**Clear** never delete originals. Outgoing drags are copy-only. Keep originals in
+place—if one moves or disappears, add it again. This accepts existing local file
+URLs, not text, web links, or promised downloads from other apps.
+
 ## What's included
 
 | Tab | Features |
@@ -107,6 +120,7 @@ up to 100 track/version combinations. Coverage and timing depend on LRCLIB's dat
 | Dashboard | Clock, current-month calendar, battery/charging, hardware model, uptime, mini Spotify player |
 | Media | Circular album art, live radial frequency bars, title/artist/album, synchronized lyric line, previous/play/pause/next, seeking, beat-reactive Bongo Cat |
 | Performance | CPU utilization, memory-used estimate, used/available disk space |
+| Shelf | AirDrop recipient chooser, temporary file tray, native file drag-in/drag-out |
 
 The selected tab is remembered. The panel follows display configuration changes
 and prefers the display with a physical notch. The collapsed notch shows artwork
@@ -154,7 +168,7 @@ This project is not configured for App Store distribution or notarization.
 
 ## Verification
 
-Audio and lyrics tests:
+Audio, lyrics, and file-reference tests:
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
@@ -169,6 +183,11 @@ for the checks that require macOS UI permissions and your Spotify session.
 After building both Debug and Release, verify their signatures and separate privacy
 identities with `python3 scripts/check-app-identities.py`.
 
+Run `python3 scripts/check-shelf-interactions.py` for native Shelf hit-testing,
+drop callbacks, outgoing file payloads, drag cleanup, and sharing-state checks.
+It uses a test sharing service; actual Telegram drops and AirDrop transfers remain
+interactive checks in `docs/manual-qa.md`.
+
 ## Where to customize
 
 ```text
@@ -177,7 +196,7 @@ CaelestiaNotch/
   Window/       Notch positioning, hover detection, collapse delay
   Services/     Spotify, lyrics, ScreenCaptureKit audio, cat motion, system metrics
   Core/         FFT, beat detection, lyric parsing/lookup, playback clock
-  UI/           Theme, three tabs, circular visualizer, GIF renderer
+  UI/           Theme, four tabs, native file dragging, circular visualizer, GIF renderer
   Resources/    Bongo Cat GIF and upstream attribution/license
 Config/         Info.plist, Apple Events entitlement
 Tests/          Audio-analysis tests

@@ -14,6 +14,7 @@ final class NotchWindowController: NSWindowController {
     private var closeTask: Task<Void, Never>?
     private var screenObserver: NSObjectProtocol?
     private var lastInside = false
+    private var incomingFileDrag = false
     private let bodyHeight = AppModel.expandedBodyHeight
 
     init(model: AppModel) {
@@ -28,14 +29,20 @@ final class NotchWindowController: NSWindowController {
         panel.isReleasedWhenClosed = false
         panel.animationBehavior = .none
         super.init(window: panel)
-        panel.contentView = NSHostingView(rootView: NotchRootView(model: model))
+        let hostingView = NotchDropHostingView(rootView: NotchRootView(model: model))
+        hostingView.onFileDrag = { [weak self] in self?.expandForFileDrag() }
+        hostingView.onDrop = { [weak model] urls in model?.shelf.add(urls) }
+        hostingView.registerForDraggedTypes([.fileURL])
+        panel.contentView = hostingView
         position()
         screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.position() }
         }
-        pointerTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 0.05, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.checkPointer() }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        pointerTimer = timer
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -62,9 +69,16 @@ final class NotchWindowController: NSWindowController {
 
     func expand() {
         closeTask?.cancel()
+        closeTask = nil
         withAnimation(.spring(response: 0.38, dampingFraction: 0.86)) { model.expanded = true }
         window?.ignoresMouseEvents = false
         lastInside = true
+    }
+
+    private func expandForFileDrag() {
+        incomingFileDrag = true
+        if model.selectedTab != .shelf { model.selectedTab = .shelf }
+        if !model.expanded { expand() }
     }
 
     private func checkPointer() {
@@ -74,21 +88,54 @@ final class NotchWindowController: NSWindowController {
         let height = model.expanded ? model.notchHeight + bodyHeight : model.notchHeight + 3
         let hitRect = NSRect(x: window.frame.midX - width / 2, y: window.frame.maxY - height, width: width, height: height)
         let inside = hitRect.contains(point)
+        if NSEvent.pressedMouseButtons & 1 == 0 { incomingFileDrag = false }
+        let keepOpen = incomingFileDrag || model.shelf.keepsPanelOpen
         // A fixed transparent host allows SwiftUI's spring animation without intercepting
         // clicks in the desktop below the collapsed notch.
         window.ignoresMouseEvents = !inside
-        if inside {
+        if inside || keepOpen {
             closeTask?.cancel()
             closeTask = nil
-            if !model.expanded { expand() }
-        } else if lastInside && model.expanded {
-            closeTask?.cancel()
+            if inside && !model.expanded { expand() }
+        } else if model.expanded && closeTask == nil {
             closeTask = Task { [weak self] in
                 try? await Task.sleep(for: .milliseconds(450))
                 guard !Task.isCancelled, let self else { return }
+                self.closeTask = nil
+                guard !self.lastInside, !self.incomingFileDrag, !self.model.shelf.keepsPanelOpen else { return }
                 withAnimation(.spring(response: 0.32, dampingFraction: 0.9)) { self.model.expanded = false }
             }
         }
         lastInside = inside
+    }
+}
+
+/// The compact notch itself is a drop destination, even before the Shelf exists.
+private final class NotchDropHostingView: NSHostingView<NotchRootView> {
+    var onFileDrag: (() -> Void)?
+    var onDrop: (([URL]) -> Void)?
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard FileDragPasteboard.containsFiles(sender.draggingPasteboard) else { return [] }
+        onFileDrag?()
+        return .copy
+    }
+
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard FileDragPasteboard.containsFiles(sender.draggingPasteboard) else { return [] }
+        onFileDrag?()
+        return .copy
+    }
+
+    override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        FileDragPasteboard.containsFiles(sender.draggingPasteboard)
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let urls = FileDragPasteboard.urls(from: sender.draggingPasteboard)
+        guard !urls.isEmpty else { return false }
+        onFileDrag?()
+        onDrop?(urls)
+        return true
     }
 }

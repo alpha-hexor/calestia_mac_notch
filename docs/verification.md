@@ -78,3 +78,33 @@ These tests verify detection/gating, not the subjective appearance on real music
 - The user independently ran the app from Xcode and confirmed it is working.
   The Release bundle was also rebuilt. Detailed edge-case checks remain listed
   in `manual-qa.md`, rather than being inferred from that confirmation.
+
+## Temporary Shelf and drag repair — 2026-09-26
+
+- Debug and Release arm64 builds succeeded; identity/signature checks passed.
+- All 27 Core tests and 27 native interaction assertions passed.
+
+The separate AppKit drag coordinator resolves the NSHostingView/NSDraggingSource
+SDK conflict, but its completion originally depended on a weak reference to the
+source tile. A regression that releases the tile before drag cancellation left
+`isDraggingOut` true. Cleanup now captures the service callback independently and
+the coordinator retains itself until AppKit completes the session.
+
+AirDrop presentation is deferred until after the incoming drop callback returns,
+while pinning the notch immediately. Completion/cancellation only applies to the
+active sharing service. The unsupported `airdrop` symbol was replaced with the
+verified `antenna.radiowaves.left.and.right` system symbol.
+
+Run `python3 scripts/check-shelf-interactions.py`. It compiles the actual app
+sources into a temporary native harness and checks real AppKit hit-testing,
+incoming file URL pasteboards/drop callbacks, outgoing drag items and copy-only
+operations, cancellation after source-view destruction, compact-notch expansion,
+quick drops, and AirDrop presentation/completion state with a test sharing service.
+The native drag session is intercepted at `beginDraggingSession`; this is not a
+claim of an end-to-end transfer to another process or device.
+AppKit may log `CoreDragDispose: -1850` when the test-only dummy dragging session
+is destroyed; the harness deliberately does not create a WindowServer drag.
+
+Interactive Telegram/Finder drops and real AirDrop recipient/transfer/cancellation
+checks remain in `manual-qa.md`. The agent environment lacks Accessibility and
+event-posting permission for driving those apps automatically.

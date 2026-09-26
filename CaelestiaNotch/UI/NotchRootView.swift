@@ -18,6 +18,7 @@ struct NotchRootView: View {
                         case .dashboard: DashboardView(spotify: model.spotify, system: model.system, bongo: model.bongo)
                         case .media: MediaView(spotify: model.spotify, audio: model.audio, bongo: model.bongo, lyrics: model.lyrics)
                         case .performance: PerformanceView(system: model.system)
+                        case .shelf: ShelfView(shelf: model.shelf)
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

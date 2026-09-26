@@ -6,7 +6,7 @@ These are a checklist, not a claim that the interactive checks have passed.
 
 ## Window and layout
 - Quit Boring Notch; run Caelestia Notch. Confirm menu-bar icon and no Dock icon.
-- Hover over the notch: cream panel expands below the camera, with three tabs.
+- Hover over the notch: cream panel expands below the camera, with four tabs.
 - Move between the notch, tabs, slider, and panel edges without unexpected closing.
 - Move outside: closes after ~450 ms. Quickly re-enter: closing is canceled.
 - Click the desktop below the closed notch: click reaches the underlying app.
@@ -66,3 +66,20 @@ These are a checklist, not a claim that the interactive checks have passed.
   after connectivity returns. A previously cached track still displays lyrics.
 - Lyrics work with audio capture disabled. Close/reopen the panel and switch tabs:
   playback synchronization resumes from the current position.
+
+## Temporary file Shelf
+- Run only one copy of Caelestia Notch and quit other notch apps before testing.
+- Drag a local file from Finder onto the compact notch: Shelf opens. Drop it into
+  the right-hand tray; its icon and filename appear. Try several files and a folder.
+- Drop the same file again: no duplicate. Drop over an existing tile: new files
+  still land in the tray. The + picker supports several files and folders.
+- Drag a tile into Telegram's message composer: an attachment preview appears.
+  Drag it into another Finder folder: a copy appears; the original remains intact.
+- Drag out, then press Escape: the tile remains; moving away collapses the panel
+  after ~450 ms. Repeat several times and after switching away from Shelf and back.
+- Remove one item and Clear all; verify originals remain. Quit and relaunch:
+  tray is empty. Move/delete a fixture original: the tile reports it unavailable.
+- Drop a file on AirDrop: native recipient chooser appears. Cancel it, leave the
+  notch, and verify normal collapse. Repeat and send to a nearby device; verify receipt.
+- Click AirDrop, choose files, and repeat. Cancel the file picker: the panel should
+  resume normal hover behavior. No missing-system-symbol warning should be logged.

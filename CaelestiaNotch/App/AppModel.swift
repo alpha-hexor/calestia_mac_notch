@@ -1,13 +1,14 @@
 import SwiftUI
 
 enum NotchTab: String, CaseIterable {
-    case dashboard = "Dashboard", media = "Media", performance = "Performance"
+    case dashboard = "Dashboard", media = "Media", performance = "Performance", shelf = "Shelf"
 
     var symbol: String {
         switch self {
         case .dashboard: "square.grid.2x2"
         case .media: "music.note.list"
         case .performance: "gauge.with.dots.needle.50percent"
+        case .shelf: "tray"
         }
     }
 }
@@ -20,6 +21,7 @@ final class AppModel: ObservableObject {
     let bongo = BongoCatController()
     let lyrics = LyricsService()
     let system = SystemMonitor()
+    let shelf = ShelfService()
     @Published var expanded = false
     @Published var notchWidth: CGFloat = 190
     @Published var notchHeight: CGFloat = 32
