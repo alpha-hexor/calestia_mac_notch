@@ -8,13 +8,7 @@ No Homebrew, API keys, Swift packages, or paid developer account needed to run l
 ## Product preview
 
 <p align="center">
-  <a href="demo/demo.mp4">
-    <img src="demo/preview.png" alt="Caelestia Notch product preview — click to watch the demo" width="100%">
-  </a>
-</p>
-
-<p align="center">
-  <sub>▶ <a href="demo/demo.mp4">Watch the 24-second demo</a> — hover to expand, switch tabs, play music, drop files.</sub>
+  <sub>▶ <a href="https://github.com/user-attachments/assets/0ed250b9-d950-44af-82be-315e3248f13b">Watch the 24-second demo</a> — hover to expand, switch tabs, play music, drop files.</sub>
 </p>
 
 ## Open and run in Xcode
