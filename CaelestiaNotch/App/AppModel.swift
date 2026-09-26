@@ -15,7 +15,7 @@ enum NotchTab: String, CaseIterable {
 
 @MainActor
 final class AppModel: ObservableObject {
-    static let expandedBodyHeight: CGFloat = 350
+    static let expandedPanelHeight: CGFloat = 304
     let spotify = SpotifyService()
     let audio = AudioCaptureService()
     let bongo = BongoCatController()
@@ -25,7 +25,7 @@ final class AppModel: ObservableObject {
     @Published var expanded = false
     @Published var notchWidth: CGFloat = 190
     @Published var notchHeight: CGFloat = 32
-    @Published var panelWidth: CGFloat = 760
+    @Published var panelWidth: CGFloat = 880
     @Published var selectedTab: NotchTab {
         didSet { UserDefaults.standard.set(selectedTab.rawValue, forKey: "selectedTab") }
     }

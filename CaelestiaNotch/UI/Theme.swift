@@ -11,9 +11,10 @@ enum Palette {
 }
 
 struct Card<Content: View>: View {
+    var inset: CGFloat = 14
     @ViewBuilder var content: Content
     var body: some View {
-        content.padding(14).frame(maxWidth: .infinity, maxHeight: .infinity)
+        content.padding(inset).frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Palette.card, in: RoundedRectangle(cornerRadius: 16))
     }
 }

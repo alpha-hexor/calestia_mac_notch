@@ -15,7 +15,7 @@ final class NotchWindowController: NSWindowController {
     private var screenObserver: NSObjectProtocol?
     private var lastInside = false
     private var incomingFileDrag = false
-    private let bodyHeight = AppModel.expandedBodyHeight
+    private let expandedHeight = AppModel.expandedPanelHeight
 
     init(model: AppModel) {
         self.model = model
@@ -60,8 +60,8 @@ final class NotchWindowController: NSWindowController {
         } else {
             model.notchWidth = 184
         }
-        model.panelWidth = min(760, screen.frame.width - 32)
-        let height = model.notchHeight + bodyHeight + 18
+        model.panelWidth = min(880, screen.frame.width - 32)
+        let height = expandedHeight + 18
         window.setFrame(NSRect(x: screen.frame.midX - model.panelWidth / 2, y: screen.frame.maxY - height,
                                width: model.panelWidth, height: height), display: true)
         window.orderFrontRegardless()
@@ -85,9 +85,17 @@ final class NotchWindowController: NSWindowController {
         guard let window else { return }
         let point = NSEvent.mouseLocation
         let width = model.expanded ? model.panelWidth : model.notchWidth + 92
-        let height = model.expanded ? model.notchHeight + bodyHeight : model.notchHeight + 3
+        let height = model.expanded
+            ? expandedHeight
+            : model.notchHeight + 3
         let hitRect = NSRect(x: window.frame.midX - width / 2, y: window.frame.maxY - height, width: width, height: height)
-        let inside = hitRect.contains(point)
+        let inside: Bool
+        if model.expanded {
+            let localPoint = CGPoint(x: point.x - window.frame.minX, y: window.frame.maxY - point.y)
+            inside = ExpandedPanelShape().path(in: CGRect(x: 0, y: 0, width: width, height: height)).contains(localPoint)
+        } else {
+            inside = hitRect.contains(point)
+        }
         if NSEvent.pressedMouseButtons & 1 == 0 { incomingFileDrag = false }
         let keepOpen = incomingFileDrag || model.shelf.keepsPanelOpen
         // A fixed transparent host allows SwiftUI's spring animation without intercepting

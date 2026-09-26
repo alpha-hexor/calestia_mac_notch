@@ -7,17 +7,25 @@ struct MediaView: View {
     let lyrics: LyricsService
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             HStack(spacing: 18) {
                 RadialVisualizer(image: spotify.artwork, bands: audio.bands, isPlaying: spotify.isPlaying)
-                    .frame(width: 210, height: 210)
-                VStack(spacing: 8) {
+                    .frame(width: 140, height: 140)
+                VStack(spacing: 4) {
                     metadata
                     LyricLineView(spotify: spotify, lyrics: lyrics)
                     PlaybackControls(spotify: spotify)
                     if let track = spotify.track {
                         SeekBar(position: spotify.position, duration: track.duration, onSeek: spotify.seek)
                     }
+                }
+                .frame(maxWidth: .infinity)
+
+                VStack(spacing: 6) {
+                    BongoCatView(motion: bongo)
+                        .frame(width: 142, height: 84)
+                    Text(spotify.isPlaying ? "a little company, a little music" : "waiting for a little music")
+                        .font(.system(size: 9)).foregroundStyle(Palette.muted)
                     Button(action: spotify.openSpotify) {
                         HStack(spacing: 5) {
                             Image(systemName: "waveform.circle.fill").foregroundStyle(Color(red: 0.15, green: 0.66, blue: 0.38))
@@ -25,31 +33,24 @@ struct MediaView: View {
                             Image(systemName: "arrow.up.right").font(.system(size: 8))
                         }
                     }.buttonStyle(SoftButtonStyle())
-                }
-                .frame(maxWidth: .infinity)
-
-                VStack(spacing: 8) {
-                    BongoCatView(motion: bongo)
-                        .frame(width: 158, height: 130)
-                    Text(spotify.isPlaying ? "a little company, a little music" : "waiting for a little music")
-                        .font(.system(size: 9)).foregroundStyle(Palette.muted)
-                }.frame(width: 165)
+                }.frame(width: 150)
             }
-            footer.frame(height: 24)
+            footer.frame(height: 16)
         }
     }
 
     private var metadata: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 3) {
             Text(spotify.track?.title ?? (spotify.isRunning ? "Your next favorite song" : "Make yourself at home"))
                 .font(.system(size: 15, weight: .semibold, design: .rounded))
-                .foregroundStyle(Palette.accent).lineLimit(2).multilineTextAlignment(.center)
+                .foregroundStyle(Palette.accent).lineLimit(1).multilineTextAlignment(.center)
+                .help(spotify.track?.title ?? "Open Spotify and play something.")
             Text(spotify.track?.artist ?? "Open Spotify and play something.")
                 .font(.system(size: 12)).lineLimit(1).foregroundStyle(Palette.muted)
             if let album = spotify.track?.album, !album.isEmpty {
                 Text(album).font(.system(size: 10)).foregroundStyle(Palette.muted.opacity(0.8)).lineLimit(1)
             }
-        }.frame(height: 65)
+        }.frame(height: 50)
     }
 
     @ViewBuilder private var footer: some View {

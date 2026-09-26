@@ -4,7 +4,7 @@ struct PerformanceView: View {
     @ObservedObject var system: SystemMonitor
 
     var body: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 8) {
             HStack(spacing: 20) {
                 MetricGauge(fraction: system.cpuUsage, value: "\(Int(system.cpuUsage * 100))%", title: "CPU usage",
                             symbol: "cpu", detail: "\(ProcessInfo.processInfo.activeProcessorCount) logical cores", color: Palette.accent)
@@ -43,10 +43,10 @@ private struct MetricGauge: View {
                     .animation(.easeInOut(duration: 0.8), value: fraction)
                 VStack(spacing: 6) {
                     Image(systemName: symbol).font(.system(size: 17, weight: .light)).foregroundStyle(color)
-                    Text(value).font(.system(size: 30, weight: .light, design: .rounded)).monospacedDigit()
+                    Text(value).font(.system(size: 26, weight: .light, design: .rounded)).monospacedDigit()
                     Text(title).font(.system(size: 11)).foregroundStyle(Palette.muted)
                 }
-            }.frame(width: 164, height: 164)
+            }.frame(width: 128, height: 128)
             Text(detail).font(.system(size: 10)).foregroundStyle(Palette.muted)
         }
         .frame(maxWidth: .infinity)
